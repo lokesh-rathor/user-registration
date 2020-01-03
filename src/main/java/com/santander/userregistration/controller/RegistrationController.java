@@ -51,7 +51,7 @@ public class RegistrationController {
 	public ResponseEntity<UserRegistrationResponseDto> userRegistration(
 			@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) {
 
-		UserRegistrationResponseDto userRegistrationResponseDto=userRegistrationService.userRegister(userRegistrationRequestDto);
+		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService.userRegister(userRegistrationRequestDto);
 		
 		return new ResponseEntity<>(userRegistrationResponseDto, HttpStatus.OK);
 

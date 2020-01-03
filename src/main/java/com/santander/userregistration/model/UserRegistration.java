@@ -30,7 +30,7 @@ public class UserRegistration {
 	@Column(name="DateOfBirth")
 	private Date dateOfBirth;
 	
-	@Column(name="Email")
+	@Column(name="Email", unique=true)
 	private String email;
 	
 	@Column(name="IsSingleORJointAcc")

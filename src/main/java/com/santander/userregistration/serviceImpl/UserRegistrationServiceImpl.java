@@ -29,7 +29,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 		userRegistration.setForgetPasswordQ(userRegistrationRequestDto.getForgetPasswordQ());
 		userRegistration.setIsSingleOrJoint(userRegistrationRequestDto.getIsSingleOrJoint());
 		
-		userRegistration=userRegistrationRepository.save(userRegistration);
+		userRegistration = userRegistrationRepository.save(userRegistration);
 		
 		UserRegistrationResponseDto userRegistrationResponseDto=new UserRegistrationResponseDto();
 		userRegistrationResponseDto.setEmail(userRegistration.getEmail());
