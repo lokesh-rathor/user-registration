@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
@@ -27,6 +29,8 @@ public class RegistrationController {
 	
 	@Autowired
 	private UserRegistrationService userRegistrationService;
+	
+	private static final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
 	@HystrixCommand(fallbackMethod = "fallback_hello", commandProperties = {
 
@@ -51,8 +55,9 @@ public class RegistrationController {
 	public ResponseEntity<UserRegistrationResponseDto> userRegistration(
 			@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) {
 
+		logger.info("Inside User Registration Method");
 		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService.userRegister(userRegistrationRequestDto);
-		
+		logger.info("User Registration successfull");
 		return new ResponseEntity<>(userRegistrationResponseDto, HttpStatus.OK);
 
 	}
