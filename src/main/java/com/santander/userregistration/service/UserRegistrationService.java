@@ -14,6 +14,7 @@ public interface UserRegistrationService {
 	public ForgetPasswordDto forgetPassword(String email);
 	
 	public ForgetPasswordDto resetPassword(String email,ResetPasswordInputDto pwd);
-	public LogInDto logIn(LogInInputDto loginDto);
+	
+	public Integer logIn(LogInInputDto loginDto);
 	
 }

@@ -1,7 +1,5 @@
 package com.santander.userregistration.controller;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,10 +75,19 @@ public class RegistrationController {
 
 	}
 	 @PostMapping(value = "/logIn")
-	  public LogInDto logIn(@RequestBody LogInInputDto loginDto) {
-	 
-		 LogInDto customer = userRegistrationService.logIn(loginDto);
-	    return customer;
+	  public Integer logIn(@RequestBody LogInInputDto loginDto)  {
+	    
+		 int state = 0;
+		try {
+			state = userRegistrationService.logIn(loginDto);
+		   
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return state;
+		
 	  }
 	 
 	
