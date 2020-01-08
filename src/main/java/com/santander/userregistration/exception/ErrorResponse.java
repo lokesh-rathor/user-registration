@@ -13,7 +13,6 @@ public class ErrorResponse {
     }
  
 	private int status;
-    //General error message about nature of error
     private String message;
 
 	public int getStatus() {

@@ -1,8 +1,14 @@
 package com.santander.userregistration.serviceImpl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.santander.userregistration.dto.ForgetPasswordDto;
+import com.santander.userregistration.dto.LogInDto;
+import com.santander.userregistration.dto.LogInInputDto;
+import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
 import com.santander.userregistration.model.UserRegistration;
@@ -37,6 +43,44 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 		userRegistrationResponseDto.setMessage("Registered Successfully");
 		
 		return userRegistrationResponseDto;
+	}
+
+	@Override
+	public ForgetPasswordDto forgetPassword(String email) {
+		
+		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email);
+		
+		ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
+		forgetPasswordDto.setAnswer(userRegistrationRequestDto.getForgetPasswordA());
+		forgetPasswordDto.setQuestions(userRegistrationRequestDto.getForgetPasswordQ());
+		
+		
+				return forgetPasswordDto;
+	}
+
+	@Override
+	public ForgetPasswordDto resetPassword(String email,ResetPasswordInputDto pwd) {
+		
+		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email);
+		
+		userRegistrationRequestDto.setPassword(pwd.getPwd());
+		userRegistrationRepository.save(userRegistrationRequestDto);
+		return null;
+	}
+
+	@Override
+	public LogInDto logIn(LogInInputDto loginDto) {
+		UserRegistration logIn = userRegistrationRepository.findByEmail(loginDto.getEmail());
+		
+		if(logIn.getEmail().equals(loginDto.getEmail()) && logIn.getPassword().equals(loginDto.getPwwd()))
+		{
+			System.out.println("abcd");
+		}
+		else
+		{
+			System.out.println("hkjkhhhjhjkh");
+		}
+		return null;
 	}
 
 }
