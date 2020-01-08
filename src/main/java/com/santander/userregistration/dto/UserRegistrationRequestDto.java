@@ -2,15 +2,36 @@ package com.santander.userregistration.dto;
 
 import java.sql.Date;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 public class UserRegistrationRequestDto {
 
+	@NotNull
+	@Size(min=8)
 	private String password;
+	
+	@NotNull
+	@Size(min=2)
 	private String firstName;
+	
+	@NotNull
+	@Size(min=2)
 	private String lastName;
+	
+	//@NotNull
 	private Date dateOfBirth;
+	
+	@NotNull
+	@Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
 	private String email;
-	private String isSingleOrJoint;
+	
+	@NotNull
 	private String forgetPasswordQ;
+	
+	@NotNull
+	@Size(min=2)
 	private String forgetPasswordA;
 	
 	public String getPassword() {
@@ -42,12 +63,6 @@ public class UserRegistrationRequestDto {
 	}
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	public String getIsSingleOrJoint() {
-		return isSingleOrJoint;
-	}
-	public void setIsSingleOrJoint(String isSingleOrJoint) {
-		this.isSingleOrJoint = isSingleOrJoint;
 	}
 	public String getForgetPasswordQ() {
 		return forgetPasswordQ;

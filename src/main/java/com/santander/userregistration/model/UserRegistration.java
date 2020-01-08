@@ -33,8 +33,6 @@ public class UserRegistration {
 	@Column(name="Email", unique=true)
 	private String email;
 	
-	@Column(name="IsSingleORJointAcc")
-	private String isSingleOrJoint;
 	
 	@Column(name="ForgetPasswordQ")
 	private String forgetPasswordQ;
@@ -90,14 +88,7 @@ public class UserRegistration {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-	public String getIsSingleOrJoint() {
-		return isSingleOrJoint;
-	}
-
-	public void setIsSingleOrJoint(String isSingleOrJoint) {
-		this.isSingleOrJoint = isSingleOrJoint;
-	}
+	
 
 	public String getForgetPasswordQ() {
 		return forgetPasswordQ;

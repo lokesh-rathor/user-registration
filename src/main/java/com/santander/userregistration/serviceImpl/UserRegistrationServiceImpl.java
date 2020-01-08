@@ -27,7 +27,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 		userRegistration.setDateOfBirth(userRegistrationRequestDto.getDateOfBirth());
 		userRegistration.setForgetPasswordA(userRegistrationRequestDto.getForgetPasswordA());
 		userRegistration.setForgetPasswordQ(userRegistrationRequestDto.getForgetPasswordQ());
-		userRegistration.setIsSingleOrJoint(userRegistrationRequestDto.getIsSingleOrJoint());
 		
 		userRegistration = userRegistrationRepository.save(userRegistration);
 		

@@ -1,5 +1,7 @@
 package com.santander.userregistration.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -10,13 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
+import com.santander.userregistration.exception.InvalidInputException;
 import com.santander.userregistration.service.UserRegistrationService;
 
 @CrossOrigin
@@ -53,12 +54,16 @@ public class RegistrationController {
 
 	@PostMapping("/register")
 	public ResponseEntity<UserRegistrationResponseDto> userRegistration(
-			@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) {
+			@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) throws InvalidInputException {
 
+		/*
+		 * if(errors.hasErrors()) { throw new
+		 * InvalidInputException("Invalid Input is missing"); }
+		 */
+		
 		logger.info("Inside User Registration Method");
-		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService.userRegister(userRegistrationRequestDto);
 		logger.info("User Registration successfull");
-		return new ResponseEntity<>(userRegistrationResponseDto, HttpStatus.OK);
+		return new ResponseEntity<UserRegistrationResponseDto>(userRegistrationService.userRegister(userRegistrationRequestDto), HttpStatus.OK);
 
 	}
 
