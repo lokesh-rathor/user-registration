@@ -42,16 +42,21 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 	}
 
 	@Override
-	public ForgetPasswordDto forgetPassword(String email) {
+	public Integer forgetPassword(ForgetPasswordDto email) {
+		int state;
+		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email.getEmail());
+	System.out.println(userRegistrationRequestDto.getEmail());
+		if(userRegistrationRequestDto.getEmail().equals(email.getEmail()))
+		{
+			state = 1;
+		}
+		else
+		{
+			state = 0;
+		}
 		
-		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email);
 		
-		ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
-		forgetPasswordDto.setAnswer(userRegistrationRequestDto.getForgetPasswordA());
-		forgetPasswordDto.setQuestions(userRegistrationRequestDto.getForgetPasswordQ());
-		
-		
-				return forgetPasswordDto;
+	    return state;
 	}
 
 	@Override

@@ -9,21 +9,15 @@ package com.santander.userregistration.dto;
  */
 public class ForgetPasswordDto {
 	
-	String questions;
-	public String getQuestions() {
-		return questions;
+	String email;
+
+	public String getEmail() {
+		return email;
 	}
-	public void setQuestions(String questions) {
-		this.questions = questions;
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
-	public String getAnswer() {
-		return answer;
-	}
-	public void setAnswer(String answer) {
-		this.answer = answer;
-	}
-	String answer;
-	
 	
 
 }

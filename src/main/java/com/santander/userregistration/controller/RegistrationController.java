@@ -72,19 +72,17 @@ public class RegistrationController {
 	}
 
 	@PostMapping("/forgetPassword")
-	public Integer ForgetPassword(@RequestBody String email) {
+	public Integer ForgetPassword(@RequestBody ForgetPasswordDto email) {
 
 		int state = 0;
 		
 		System.out.println("abcddddddd");
-		ForgetPasswordDto forgetPasswordDto = userRegistrationService.forgetPassword(email);
-		if(forgetPasswordDto!=null)
-		{
-			state = 1;
+		try {
+		state = userRegistrationService.forgetPassword(email);
 		}
-		else
-		{
-			state= 0;
+		catch(Exception e) {
+			e.printStackTrace();
+			
 		}
 		return state;
 
