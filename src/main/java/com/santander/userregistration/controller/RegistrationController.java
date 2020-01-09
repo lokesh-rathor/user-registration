@@ -31,10 +31,10 @@ public class RegistrationController {
 
 	@Autowired
 	Environment environment;
-	
+
 	@Autowired
 	private UserRegistrationService userRegistrationService;
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
 	@HystrixCommand(fallbackMethod = "fallback_hello", commandProperties = {
@@ -60,13 +60,13 @@ public class RegistrationController {
 			@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) {
 
 		logger.info("Inside User Registration Method");
-		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService.userRegister(userRegistrationRequestDto);
+		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService
+				.userRegister(userRegistrationRequestDto);
 		logger.info("User Registration successfull");
 		return new ResponseEntity<>(userRegistrationResponseDto, HttpStatus.OK);
 
 	}
-	
-	
+
 	@GetMapping("/forgetPassword/{email}")
 	public ResponseEntity<ForgetPasswordDto> ForgetPassword(@PathVariable("email") String email) {
 
@@ -74,31 +74,29 @@ public class RegistrationController {
 		return new ResponseEntity<>(forgetPasswordDto, HttpStatus.OK);
 
 	}
-	 @PostMapping(value = "/logIn")
-	  public Integer logIn(@RequestBody LogInInputDto loginDto)  {
-	    
-		 int state = 0;
+
+	@PostMapping(value = "/logIn")
+	public Integer logIn(@RequestBody LogInInputDto loginDto) {
+
+		int state = 0;
 		try {
 			state = userRegistrationService.logIn(loginDto);
-		   
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return state;
-		
-	  }
-	 
-	
-	@PostMapping("/resetPassword/{email}")
-	public ResponseEntity<ForgetPasswordDto> resetPassword(@PathVariable("email") String email,@RequestBody ResetPasswordInputDto pwd) {
-
-		ForgetPasswordDto forgetPasswordDto = userRegistrationService.resetPassword(email,pwd);
-		return new ResponseEntity<>(forgetPasswordDto, HttpStatus.OK);
 
 	}
 
+	@PostMapping("/resetPassword/{email}")
+	public ResponseEntity<ForgetPasswordDto> resetPassword(@PathVariable("email") String email,
+			@RequestBody ResetPasswordInputDto pwd) {
 
+		ForgetPasswordDto forgetPasswordDto = userRegistrationService.resetPassword(email, pwd);
+		return new ResponseEntity<>(forgetPasswordDto, HttpStatus.OK);
+
+	}
 
 }
