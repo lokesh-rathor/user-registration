@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.santander.userregistration.dto.ForgetPasswordDto;
-import com.santander.userregistration.dto.LogInDto;
 import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
+import com.santander.userregistration.exception.InvalidInputException;
 import com.santander.userregistration.service.UserRegistrationService;
 
 @CrossOrigin
@@ -57,19 +57,26 @@ public class RegistrationController {
 
 	@PostMapping("/register")
 	public ResponseEntity<UserRegistrationResponseDto> userRegistration(
-			@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) {
+			@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) throws InvalidInputException {
 
+		/*
+		 * if(errors.hasErrors()) { throw new
+		 * InvalidInputException("Invalid Input is missing"); }
+		 */
+		
 		logger.info("Inside User Registration Method");
-		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService
-				.userRegister(userRegistrationRequestDto);
+		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService.userRegister(userRegistrationRequestDto);
 		logger.info("User Registration successfull");
-		return new ResponseEntity<>(userRegistrationResponseDto, HttpStatus.OK);
+		return new ResponseEntity<UserRegistrationResponseDto>(userRegistrationService.userRegister(userRegistrationRequestDto), HttpStatus.OK);
 
 	}
 
-	@GetMapping("/forgetPassword/{email}")
-	public ResponseEntity<ForgetPasswordDto> ForgetPassword(@PathVariable("email") String email) {
+	@PostMapping("/forgetPassword")
+	public ResponseEntity<ForgetPasswordDto> ForgetPassword(String email) {
 
+		
+		
+		System.out.println("abcddddddd");
 		ForgetPasswordDto forgetPasswordDto = userRegistrationService.forgetPassword(email);
 		return new ResponseEntity<>(forgetPasswordDto, HttpStatus.OK);
 
