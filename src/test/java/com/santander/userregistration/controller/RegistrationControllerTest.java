@@ -1,29 +1,32 @@
 package com.santander.userregistration.controller;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.sql.Date;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
+import com.santander.userregistration.exception.InvalidInputException;
 import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.service.UserRegistrationService;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(RegistrationController.class)
 class RegistrationControllerTest {
 
@@ -38,8 +41,23 @@ class RegistrationControllerTest {
 	@MockBean
 	private UserRegistrationRepository userRegistrationRepository;
 
-	@Autowired
-	private RegistrationController registrationController;
+	@Test // (expected = InvalidInputException.class)
+	public void testUserRegistrationError() throws Exception {
+		Date d1 = new Date(2017, 12, 12);
+			UserRegistrationRequestDto userRegistrationRequestDto = new UserRegistrationRequestDto();
+			userRegistrationRequestDto.setEmail("abc@gsdf.com");
+			userRegistrationRequestDto.setDateOfBirth(d1);
+			userRegistrationRequestDto.setFirstName("ddd");
+			userRegistrationRequestDto.setLastName("gghh");
+			userRegistrationRequestDto.setForgetPasswordA("ghh");
+			userRegistrationRequestDto.setForgetPasswordQ("jkbjhbj");
+			userRegistrationRequestDto.setPassword("jke");
+
+			String request = this.mapper(userRegistrationRequestDto);
+
+			mvc.perform(MockMvcRequestBuilders.post("/users/register").contentType(MediaType.APPLICATION_JSON_VALUE)
+					.content(request)).andExpect(status().isBadRequest());
+	}
 
 	@Test
 	void testUserRegistration() throws Exception {
@@ -62,8 +80,7 @@ class RegistrationControllerTest {
 		userRegistrationRequestDto.setForgetPasswordQ("jkbjhbj");
 		userRegistrationRequestDto.setPassword("jkehdjkwhe");
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		String request = objectMapper.writeValueAsString(userRegistrationRequestDto);
+		String request = this.mapper(userRegistrationRequestDto);
 
 		MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post("/users/register")
 				.contentType(MediaType.APPLICATION_JSON_VALUE).content(request)).andReturn();
@@ -71,6 +88,12 @@ class RegistrationControllerTest {
 		int status = mvcResult.getResponse().getStatus();
 		assertEquals(200, status);
 
+	}
+
+	private String mapper(UserRegistrationRequestDto userRegistrationRequestDto) throws JsonProcessingException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		String request = objectMapper.writeValueAsString(userRegistrationRequestDto);
+		return request;
 	}
 
 }

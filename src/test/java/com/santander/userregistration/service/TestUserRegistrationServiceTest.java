@@ -1,14 +1,15 @@
 package com.santander.userregistration.service;
 
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
@@ -16,7 +17,7 @@ import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.serviceImpl.UserRegistrationServiceImpl;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 class TestUserRegistrationServiceTest {
 	
@@ -48,5 +49,8 @@ class TestUserRegistrationServiceTest {
 		UserRegistrationResponseDto RegistrationResponseDto = userRegistrationService.userRegister(userRegistrationRequestDto);
 		assertEquals(userRegistrationResponseDto.getEmail(),RegistrationResponseDto.getEmail());
 	}
+	
+	
+	
 
 }
