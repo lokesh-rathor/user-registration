@@ -20,7 +20,7 @@ public class UserRegistrationRequestDto {
 	@Size(min=2)
 	private String lastName;
 	
-	//@NotNull
+	@NotNull
 	private Date dateOfBirth;
 	
 	@NotNull
