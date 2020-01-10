@@ -42,17 +42,17 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 	}
 
 	@Override
-	public Integer forgetPassword(ForgetPasswordDto email) {
-		int state;
+	public String forgetPassword(ForgetPasswordDto email) {
+		String state;
 		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email.getEmail());
 	System.out.println(userRegistrationRequestDto.getEmail());
 		if(userRegistrationRequestDto.getEmail().equals(email.getEmail()))
 		{
-			state = 1;
+			state = email.getEmail();
 		}
 		else
 		{
-			state = 0;
+			state = null;
 		}
 		
 		

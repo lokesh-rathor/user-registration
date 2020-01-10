@@ -10,7 +10,7 @@ public interface UserRegistrationService {
 
 	public UserRegistrationResponseDto userRegister( UserRegistrationRequestDto userRegistrationRequestDto ) ;
 	
-	public Integer forgetPassword(ForgetPasswordDto email);
+	public String forgetPassword(ForgetPasswordDto email);
 	
 	public ForgetPasswordDto resetPassword(String email,ResetPasswordInputDto pwd);
 	

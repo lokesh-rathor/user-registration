@@ -72,9 +72,9 @@ public class RegistrationController {
 	}
 
 	@PostMapping("/forgetPassword")
-	public Integer ForgetPassword(@RequestBody ForgetPasswordDto email) {
+	public String ForgetPassword(@RequestBody ForgetPasswordDto email) {
 
-		int state = 0;
+		String state = null;
 		
 		System.out.println("abcddddddd");
 		try {
