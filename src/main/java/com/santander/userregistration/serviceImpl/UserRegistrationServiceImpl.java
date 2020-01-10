@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.santander.userregistration.dto.ForgetPasswordDto;
+import com.santander.userregistration.dto.ForgetPasswordInputDto;
+import com.santander.userregistration.dto.ForgetPasswordResponseDto;
 import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
@@ -42,13 +44,14 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 	}
 
 	@Override
-	public String forgetPassword(ForgetPasswordDto email) {
-		String state;
+	public ForgetPasswordResponseDto forgetPassword(ForgetPasswordDto email) {
+		ForgetPasswordResponseDto state = new ForgetPasswordResponseDto();
 		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email.getEmail());
 	System.out.println(userRegistrationRequestDto.getEmail());
 		if(userRegistrationRequestDto.getEmail().equals(email.getEmail()))
 		{
-			state = email.getEmail();
+			state.setQuestion(userRegistrationRequestDto.getForgetPasswordQ());
+			state.setEmail(userRegistrationRequestDto.getEmail());
 		}
 		else
 		{
@@ -63,10 +66,11 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 	public ForgetPasswordDto resetPassword(String email,ResetPasswordInputDto pwd) {
 		
 		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email);
-		
+		ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
+		forgetPasswordDto.setEmail(userRegistrationRequestDto.getEmail());
 		userRegistrationRequestDto.setPassword(pwd.getPwd());
 		userRegistrationRepository.save(userRegistrationRequestDto);
-		return null;
+		return forgetPasswordDto;
 	}
 
 	@Override
@@ -82,6 +86,24 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 			result=0;
 		}
 		return result;
+	}
+
+	@Override
+	public ForgetPasswordDto forgetPassword2(ForgetPasswordInputDto forgetPasswordInputDto) {
+		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(forgetPasswordInputDto.getEmail());
+		
+		ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
+		if(forgetPasswordInputDto.getAnswer().equals(userRegistrationRequestDto.getForgetPasswordA()))
+		{
+			System.out.println(forgetPasswordInputDto.getAnswer());
+			System.out.println(userRegistrationRequestDto.getForgetPasswordA());
+			forgetPasswordDto.setEmail(userRegistrationRequestDto.getEmail());
+		}
+		else
+		{
+			forgetPasswordDto.setEmail(null);
+		}
+		return forgetPasswordDto;
 	}
 
 }
