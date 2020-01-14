@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
@@ -18,7 +17,6 @@ import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.serviceImpl.UserRegistrationServiceImpl;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
 class TestUserRegistrationServiceTest {
 	
 	private static final String EMAIL = "test@test.com";

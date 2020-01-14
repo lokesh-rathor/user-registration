@@ -1,6 +1,6 @@
 package com.santander.userregistration.exception;
 
-public class InvalidInputException extends Exception {
+public class InvalidInputException extends RuntimeException {
 
 	/**
 	 * 

@@ -8,6 +8,8 @@ import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
+import com.santander.userregistration.exception.InvalidInputException;
+import com.santander.userregistration.exception.UserNotFoundException;
 import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.service.UserRegistrationService;
@@ -82,6 +84,15 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 			result=0;
 		}
 		return result;
+	}
+
+	@Override
+	public UserRegistration getUserRegistration(Long userId) {
+		UserRegistration userRegistrationDetail=userRegistrationRepository.findByUserId(userId);
+		if(userRegistrationDetail==null) {
+			throw new UserNotFoundException("user not found"); 
+		}
+		return userRegistrationDetail;
 	}
 
 }
