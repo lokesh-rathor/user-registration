@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.santander.userregistration.dto.ForgetPasswordDto;
+import com.santander.userregistration.dto.ForgetPasswordInputDto;
+import com.santander.userregistration.dto.ForgetPasswordResponseDto;
 import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
@@ -76,20 +78,36 @@ public class RegistrationController {
 	}
 
 	@PostMapping("/forgetPassword")
-	public Integer ForgetPassword(@RequestBody ForgetPasswordDto email) {
-
-		int state = 0;
-
-		System.out.println("abcddddddd");
+	public ForgetPasswordResponseDto ForgetPassword(@RequestBody ForgetPasswordDto email) {
+		//int state = 0;
+		ForgetPasswordResponseDto state = new ForgetPasswordResponseDto();
 		try {
 			state = userRegistrationService.forgetPassword(email);
 		} catch (Exception e) {
 			e.printStackTrace();
 
 		}
+		System.out.println(state);
 		return state;
 
 	}
+	
+	@PostMapping("/forgetPassword/reset")
+	public ForgetPasswordDto ForgetPassword2(@RequestBody ForgetPasswordInputDto email) {
+
+		ForgetPasswordDto state = new ForgetPasswordDto();
+		
+		try {
+		state = userRegistrationService.forgetPassword2(email);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			
+		}
+		return state;
+
+	}
+
 
 	@PostMapping(value = "/logIn")
 	public Integer logIn(@RequestBody LogInInputDto loginDto) {
