@@ -44,26 +44,22 @@ public class RegistrationController {
 	private static final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
 	@HystrixCommand(fallbackMethod = "fallback_hello", commandProperties = {
-
 			@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "100") })
 	@GetMapping("/say-hello")
 	public String sayHello() throws InterruptedException {
-
 		String port = environment.getProperty("local.server.port");
-
+		// Thread.sleep(20000);
 		return "Hello World...." + port;
-
 	}
 
 	public String fallback_hello() {
-
 		return "Fallback";
-
 	}
 
 	@PostMapping("/register")
 	public ResponseEntity<UserRegistrationResponseDto> userRegistration(
-		@Valid	@RequestBody UserRegistrationRequestDto userRegistrationRequestDto, Errors errors) throws InvalidInputException {
+			@Valid @RequestBody UserRegistrationRequestDto userRegistrationRequestDto, Errors errors)
+			throws InvalidInputException {
 
 		if (errors.hasErrors()) {
 			throw new InvalidInputException("Invalid Input is missing");
@@ -79,49 +75,17 @@ public class RegistrationController {
 
 	@PostMapping("/forgetPassword")
 	public ForgetPasswordResponseDto ForgetPassword(@RequestBody ForgetPasswordDto email) {
-		//int state = 0;
-		ForgetPasswordResponseDto state = new ForgetPasswordResponseDto();
-		try {
-			state = userRegistrationService.forgetPassword(email);
-		} catch (Exception e) {
-			e.printStackTrace();
-
-		}
-		System.out.println(state);
-		return state;
-
+		return userRegistrationService.forgetPassword(email);
 	}
-	
+
 	@PostMapping("/forgetPassword/reset")
 	public ForgetPasswordDto ForgetPassword2(@RequestBody ForgetPasswordInputDto email) {
-
-		ForgetPasswordDto state = new ForgetPasswordDto();
-		
-		try {
-		state = userRegistrationService.forgetPassword2(email);
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			
-		}
-		return state;
-
+		return userRegistrationService.forgetPassword2(email);
 	}
-
 
 	@PostMapping(value = "/logIn")
 	public Integer logIn(@RequestBody LogInInputDto loginDto) {
-
-		int state = 0;
-		try {
-			state = userRegistrationService.logIn(loginDto);
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return state;
-
+		return userRegistrationService.logIn(loginDto);
 	}
 
 	@PostMapping("/resetPassword/{email}")
