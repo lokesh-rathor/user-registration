@@ -76,7 +76,5 @@ public class UserRegistrationRequestDto {
 	public void setForgetPasswordA(String forgetPasswordA) {
 		this.forgetPasswordA = forgetPasswordA;
 	}
-	
-	
-	
+
 }

@@ -44,6 +44,7 @@ class RegistrationControllerTest {
 
 	@Test // (expected = InvalidInputException.class)
 	public void testUserRegistrationError() throws Exception {
+		@SuppressWarnings("deprecation")
 		Date d1 = new Date(2017, 12, 12);
 		UserRegistrationRequestDto userRegistrationRequestDto = new UserRegistrationRequestDto();
 		userRegistrationRequestDto.setEmail("abc@gsdf.com");
@@ -71,6 +72,7 @@ class RegistrationControllerTest {
 		Mockito.when(userRegistrationService.userRegister(Mockito.any(UserRegistrationRequestDto.class)))
 				.thenReturn(userRegistrationResponseDto);
 
+		@SuppressWarnings("deprecation")
 		Date d1 = new Date(2017, 12, 12);
 		UserRegistrationRequestDto userRegistrationRequestDto = new UserRegistrationRequestDto();
 		userRegistrationRequestDto.setEmail("abc@gmail.com");
