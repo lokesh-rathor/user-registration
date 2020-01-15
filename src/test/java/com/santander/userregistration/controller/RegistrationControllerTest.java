@@ -1,5 +1,6 @@
 package com.santander.userregistration.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.sql.Date;
@@ -10,9 +11,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
+import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.service.UserRegistrationService;
 
@@ -83,6 +87,22 @@ class RegistrationControllerTest {
 
 		mvc.perform(MockMvcRequestBuilders.post("/users/register")
 				.contentType(MediaType.APPLICATION_JSON_VALUE).content(request)).andExpect(status().isOk());
+	}
+	
+	@Test
+	void testGetUserDetails() throws Exception {
+		
+		UserRegistration userRegistration = new UserRegistration();
+		userRegistration.setEmail(EMAIL);
+		userRegistration.setUserId(1L);
+
+		Mockito.when(userRegistrationService.getUserRegistration(Mockito.any(Long.class)))
+				.thenReturn(userRegistration);
+
+
+		MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/users/details/1")
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+		assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
 	}
 
 	@Test
