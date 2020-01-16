@@ -33,7 +33,6 @@ public class UserRegistration {
 	@Column(name="Email", unique=true)
 	private String email;
 	
-	
 	@Column(name="ForgetPasswordQ")
 	private String forgetPasswordQ;
 	
