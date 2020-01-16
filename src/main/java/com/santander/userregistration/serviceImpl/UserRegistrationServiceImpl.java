@@ -1,6 +1,7 @@
 package com.santander.userregistration.serviceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.santander.userregistration.dto.ForgetPasswordDto;
@@ -81,6 +82,9 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
+	// @Cacheable annotation adds the caching behaviour. 
+    // If multiple requests are received, then the method won't be repeatedly executed, instead, the results are shared from cached storage.
+    @Cacheable(value="userRegistrationCache", key="#p0")
 	public UserRegistration getUserRegistration(Long userId) {
 		UserRegistration userRegistrationDetail = userRegistrationRepository.findByUserId(userId);
 		if (userRegistrationDetail == null) {
