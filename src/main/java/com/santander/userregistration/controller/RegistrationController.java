@@ -102,9 +102,10 @@ public class RegistrationController {
 			throws InvalidInputException {
 
 		if (userId <= 0) {
+			
 			throw new InvalidInputException("Invalid Input is missing");
 		}
-
+		logger.info("Inside getUserDetails method..");
 		UserRegistration userRegistration = userRegistrationService.getUserRegistration(userId);
 		return new ResponseEntity<>(userRegistration, HttpStatus.OK);
 	}
