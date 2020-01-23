@@ -19,6 +19,7 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.santander.userregistration.dto.ForgetPasswordDto;
 import com.santander.userregistration.dto.ForgetPasswordInputDto;
 import com.santander.userregistration.dto.ForgetPasswordResponseDto;
+import com.santander.userregistration.dto.LogInDto;
 import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
@@ -26,7 +27,7 @@ import com.santander.userregistration.dto.UserRegistrationResponseDto;
 import com.santander.userregistration.exception.InvalidInputException;
 import com.santander.userregistration.service.UserRegistrationService;
 
-@CrossOrigin
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/users")
 public class RegistrationController {
@@ -107,19 +108,21 @@ public class RegistrationController {
 
 	}
 
-
+/*fix this, cover other http status codes*/
 	@PostMapping(value = "/logIn")
-	public Integer logIn(@RequestBody LogInInputDto loginDto) {
-
-		int state = 0;
+	public ResponseEntity<LogInDto> logIn(@RequestBody LogInInputDto loginDto) {
+		
+		LogInDto loginResponse = new LogInDto();
+		//ResponseEntity<T> response = new ResponseEntity<T>(loginResponse, HttpStatus.OK);
+		
 		try {
-			state = userRegistrationService.logIn(loginDto);
+			loginResponse = userRegistrationService.logIn(loginDto);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return state;
+		return new ResponseEntity<>(loginResponse, HttpStatus.OK);
 
 	}
 

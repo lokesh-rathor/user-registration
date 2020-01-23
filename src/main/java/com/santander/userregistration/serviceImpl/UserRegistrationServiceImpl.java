@@ -1,15 +1,22 @@
 package com.santander.userregistration.serviceImpl;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.santander.userregistration.dto.ForgetPasswordDto;
 import com.santander.userregistration.dto.ForgetPasswordInputDto;
 import com.santander.userregistration.dto.ForgetPasswordResponseDto;
+import com.santander.userregistration.dto.LogInDto;
 import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
+import com.santander.userregistration.exception.InvalidInputException;
 import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.service.UserRegistrationService;
@@ -18,6 +25,8 @@ import com.santander.userregistration.service.UserRegistrationService;
 @Service
 public class UserRegistrationServiceImpl implements UserRegistrationService{
 
+	private static final Logger logger = LoggerFactory.getLogger(UserRegistrationServiceImpl.class);
+	
 	@Autowired
 	private UserRegistrationRepository userRegistrationRepository;
 	
@@ -74,18 +83,40 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 	}
 
 	@Override
-	public Integer logIn(LogInInputDto loginDto) {
-		UserRegistration logIn = userRegistrationRepository.findByEmail(loginDto.getEmail());
-	    int result;
-		if(logIn.getEmail().equals(loginDto.getEmail()) && logIn.getPassword().equals(loginDto.getPwd()))
-		{
-			result = 1;
+	public LogInDto logIn(LogInInputDto loginDto) throws NoSuchElementException, InvalidInputException {
+		
+		LogInDto loginResponse = new LogInDto();
+		loginResponse.setMessage("An unknown error occured!");
+		UserRegistration userRegistrationData = null;
+		
+		Optional<UserRegistration> logIn = Optional.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail()));
+		
+		
+		if(logIn.isPresent()) {
+	      userRegistrationData = logIn.get();
+	      
+	      if(userRegistrationData.getEmail().equals(loginDto.getEmail()) && userRegistrationData.getPassword().equals(loginDto.getPwd()))
+			{
+				loginResponse.setUserId(userRegistrationData.getUserId());
+				loginResponse.setEmail(userRegistrationData.getEmail());
+				loginResponse.setFirstName(userRegistrationData.getFirstName());
+				loginResponse.setLastName(userRegistrationData.getLastName());
+				loginResponse.setMessage("User is authenticated");
+			}
+		
+		   if(userRegistrationData.getEmail().equals(loginDto.getEmail()) && !userRegistrationData.getPassword().equals(loginDto.getPwd())) {
+				loginResponse.setMessage("Password incorrect!");
+		   }
 		}
-		else
-		{
-			result=0;
+		else {
+			loginResponse.setMessage("Email id doesn't match!");
+			//throw new InvalidInputException("Email id doesn't match!");
+			logger.info("Email id doesn't match! : {}");
 		}
-		return result;
+	     
+		
+		
+		return loginResponse;
 	}
 
 	@Override
