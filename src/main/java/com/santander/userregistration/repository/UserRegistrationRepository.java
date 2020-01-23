@@ -11,7 +11,6 @@ import feign.Param;
 public interface UserRegistrationRepository extends JpaRepository<UserRegistration, Integer>{
 	
 	public UserRegistration findByEmail(@Param(value = "email") String email);
-	
-	public UserRegistration findByUserId(@Param("userId") Long userId);
+	public List<UserRegistrationRequestDto> findByUserId(int userId);
 
 }

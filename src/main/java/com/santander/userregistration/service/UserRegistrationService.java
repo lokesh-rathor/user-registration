@@ -1,8 +1,11 @@
 package com.santander.userregistration.service;
 
+import java.util.NoSuchElementException;
+
 import com.santander.userregistration.dto.ForgetPasswordDto;
 import com.santander.userregistration.dto.ForgetPasswordInputDto;
 import com.santander.userregistration.dto.ForgetPasswordResponseDto;
+import com.santander.userregistration.dto.LogInDto;
 import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
@@ -18,7 +21,7 @@ public interface UserRegistrationService {
 	
 	public ForgetPasswordDto resetPassword(String email,ResetPasswordInputDto pwd);
 	
-	public Integer logIn(LogInInputDto loginDto);
+	public LogInDto logIn(LogInInputDto loginDto) throws NoSuchElementException, InvalidInputException ;
 	
 	public UserRegistration getUserRegistration(Long userId) throws InvalidInputException;
 	
