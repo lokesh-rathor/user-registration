@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.santander.userregistration.dto.ForgetPasswordDto;
@@ -17,23 +18,23 @@ import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
 import com.santander.userregistration.exception.InvalidInputException;
+import com.santander.userregistration.exception.UserNotFoundException;
 import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.service.UserRegistrationService;
 
-
 @Service
-public class UserRegistrationServiceImpl implements UserRegistrationService{
+public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserRegistrationServiceImpl.class);
 	
 	@Autowired
 	private UserRegistrationRepository userRegistrationRepository;
-	
+
 	@Override
-	public UserRegistrationResponseDto userRegister(UserRegistrationRequestDto userRegistrationRequestDto) {
-		
-		UserRegistration userRegistration=new UserRegistration();
+	public UserRegistrationResponseDto userRegister(final UserRegistrationRequestDto userRegistrationRequestDto) {
+
+		UserRegistration userRegistration = new UserRegistration();
 		userRegistration.setFirstName(userRegistrationRequestDto.getFirstName());
 		userRegistration.setLastName(userRegistrationRequestDto.getLastName());
 		userRegistration.setEmail(userRegistrationRequestDto.getEmail());
@@ -41,41 +42,36 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 		userRegistration.setDateOfBirth(userRegistrationRequestDto.getDateOfBirth());
 		userRegistration.setForgetPasswordA(userRegistrationRequestDto.getForgetPasswordA());
 		userRegistration.setForgetPasswordQ(userRegistrationRequestDto.getForgetPasswordQ());
-		
+
 		userRegistration = userRegistrationRepository.save(userRegistration);
-		
-		UserRegistrationResponseDto userRegistrationResponseDto=new UserRegistrationResponseDto();
+
+		final UserRegistrationResponseDto userRegistrationResponseDto = new UserRegistrationResponseDto();
 		userRegistrationResponseDto.setEmail(userRegistration.getEmail());
 		userRegistrationResponseDto.setUserId(userRegistration.getUserId());
 		userRegistrationResponseDto.setMessage("Registered Successfully");
-		
+
 		return userRegistrationResponseDto;
 	}
 
 	@Override
-	public ForgetPasswordResponseDto forgetPassword(ForgetPasswordDto email) {
+	public ForgetPasswordResponseDto forgetPassword(final ForgetPasswordDto email) {
+
 		ForgetPasswordResponseDto state = new ForgetPasswordResponseDto();
-		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email.getEmail());
-	System.out.println(userRegistrationRequestDto.getEmail());
-		if(userRegistrationRequestDto.getEmail().equals(email.getEmail()))
-		{
+		final UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email.getEmail());
+		if (userRegistrationRequestDto.getEmail().equals(email.getEmail())) {
 			state.setQuestion(userRegistrationRequestDto.getForgetPasswordQ());
 			state.setEmail(userRegistrationRequestDto.getEmail());
-		}
-		else
-		{
+		} else {
 			state = null;
 		}
-		
-		
-	    return state;
+		return state;
 	}
 
 	@Override
-	public ForgetPasswordDto resetPassword(String email,ResetPasswordInputDto pwd) {
-		
-		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email);
-		ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
+	public ForgetPasswordDto resetPassword(final String email, final ResetPasswordInputDto pwd) {
+
+		final UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email);
+		final ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
 		forgetPasswordDto.setEmail(userRegistrationRequestDto.getEmail());
 		userRegistrationRequestDto.setPassword(pwd.getPwd());
 		userRegistrationRepository.save(userRegistrationRequestDto);
@@ -83,13 +79,13 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 	}
 
 	@Override
-	public LogInDto logIn(LogInInputDto loginDto) throws NoSuchElementException, InvalidInputException {
+	public LogInDto logIn(final LogInInputDto loginDto) throws NoSuchElementException, InvalidInputException {
 		
-		LogInDto loginResponse = new LogInDto();
+		final LogInDto loginResponse = new LogInDto();
 		loginResponse.setMessage("An unknown error occured!");
 		UserRegistration userRegistrationData = null;
 		
-		Optional<UserRegistration> logIn = Optional.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail()));
+		final Optional<UserRegistration> logIn = Optional.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail()));
 		
 		
 		if(logIn.isPresent()) {
@@ -120,18 +116,25 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 	}
 
 	@Override
-	public ForgetPasswordDto forgetPassword2(ForgetPasswordInputDto forgetPasswordInputDto) {
-		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(forgetPasswordInputDto.getEmail());
-		
-		ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
-		if(forgetPasswordInputDto.getAnswer().equals(userRegistrationRequestDto.getForgetPasswordA()))
-		{
-			System.out.println(forgetPasswordInputDto.getAnswer());
-			System.out.println(userRegistrationRequestDto.getForgetPasswordA());
-			forgetPasswordDto.setEmail(userRegistrationRequestDto.getEmail());
+	// @Cacheable annotation adds the caching behaviour. 
+    // If multiple requests are received, then the method won't be repeatedly executed, instead, the results are shared from cached storage.
+    @Cacheable(value="userRegistrationCache", key="#p0")
+	public UserRegistration getUserRegistration(final Long userId) {
+		final UserRegistration userRegistrationDetail = userRegistrationRepository.findByUserId(userId);
+		if (userRegistrationDetail == null) {
+			throw new UserNotFoundException("user not found");
 		}
-		else
-		{
+		return userRegistrationDetail;
+	}
+
+	public ForgetPasswordDto forgetPassword2(final ForgetPasswordInputDto forgetPasswordInputDto) {
+		final UserRegistration userRegistrationRequestDto = userRegistrationRepository
+				.findByEmail(forgetPasswordInputDto.getEmail());
+
+		final ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
+		if (forgetPasswordInputDto.getAnswer().equals(userRegistrationRequestDto.getForgetPasswordA())) {
+			forgetPasswordDto.setEmail(userRegistrationRequestDto.getEmail());
+		} else {
 			forgetPasswordDto.setEmail(null);
 		}
 		return forgetPasswordDto;
