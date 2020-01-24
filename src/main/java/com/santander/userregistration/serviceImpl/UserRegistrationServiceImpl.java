@@ -15,12 +15,16 @@ import com.santander.userregistration.exception.UserNotFoundException;
 import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.service.UserRegistrationService;
+import com.santander.userregistration.util.BcryptEncoder;
 
 @Service
 public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 	@Autowired
 	private UserRegistrationRepository userRegistrationRepository;
+	
+	@Autowired
+	private BcryptEncoder bcryptEncoder;
 
 	@Override
 	public UserRegistrationResponseDto userRegister(UserRegistrationRequestDto userRegistrationRequestDto) {
@@ -29,7 +33,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		userRegistration.setFirstName(userRegistrationRequestDto.getFirstName());
 		userRegistration.setLastName(userRegistrationRequestDto.getLastName());
 		userRegistration.setEmail(userRegistrationRequestDto.getEmail());
-		userRegistration.setPassword(userRegistrationRequestDto.getPassword());
+		userRegistration.setPassword(bcryptEncoder.encode(userRegistrationRequestDto.getPassword()));
 		userRegistration.setDateOfBirth(userRegistrationRequestDto.getDateOfBirth());
 		userRegistration.setForgetPasswordA(userRegistrationRequestDto.getForgetPasswordA());
 		userRegistration.setForgetPasswordQ(userRegistrationRequestDto.getForgetPasswordQ());
@@ -84,7 +88,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	@Override
 	// @Cacheable annotation adds the caching behaviour. 
     // If multiple requests are received, then the method won't be repeatedly executed, instead, the results are shared from cached storage.
-    @Cacheable(value="userRegistrationCache", key="#p0")
+    @Cacheable(value="userRegistrationCache")
 	public UserRegistration getUserRegistration(Long userId) {
 		UserRegistration userRegistrationDetail = userRegistrationRepository.findByUserId(userId);
 		if (userRegistrationDetail == null) {
