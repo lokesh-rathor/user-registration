@@ -95,6 +95,10 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		if(logIn.isPresent()) {
 	      userRegistrationData = logIn.get();
 	      
+	      if(userRegistrationData.getEmail().equals(loginDto.getEmail()) && !userRegistrationData.getPassword().equals(loginDto.getPwd())) {
+				loginResponse.setMessage("Password incorrect!");
+		   }
+	      
 	      if(userRegistrationData.getEmail().equals(loginDto.getEmail()) &&  bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword()) )
 			{
 				loginResponse.setUserId(userRegistrationData.getUserId());
@@ -104,9 +108,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 				loginResponse.setMessage("User is authenticated");
 			}
 		
-		   if(userRegistrationData.getEmail().equals(loginDto.getEmail()) && !userRegistrationData.getPassword().equals(loginDto.getPwd())) {
-				loginResponse.setMessage("Password incorrect!");
-		   }
+		   
 		}
 		else {
 			loginResponse.setMessage("Email id doesn't match!");
