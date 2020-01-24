@@ -1,5 +1,10 @@
 package com.santander.userregistration.serviceImpl;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -7,10 +12,12 @@ import org.springframework.stereotype.Service;
 import com.santander.userregistration.dto.ForgetPasswordDto;
 import com.santander.userregistration.dto.ForgetPasswordInputDto;
 import com.santander.userregistration.dto.ForgetPasswordResponseDto;
+import com.santander.userregistration.dto.LogInDto;
 import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
+import com.santander.userregistration.exception.InvalidInputException;
 import com.santander.userregistration.exception.UserNotFoundException;
 import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.repository.UserRegistrationRepository;
@@ -20,6 +27,8 @@ import com.santander.userregistration.util.BcryptEncoder;
 @Service
 public class UserRegistrationServiceImpl implements UserRegistrationService {
 
+	private static final Logger logger = LoggerFactory.getLogger(UserRegistrationServiceImpl.class);
+	
 	@Autowired
 	private UserRegistrationRepository userRegistrationRepository;
 	
@@ -27,7 +36,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	private BcryptEncoder bcryptEncoder;
 
 	@Override
-	public UserRegistrationResponseDto userRegister(UserRegistrationRequestDto userRegistrationRequestDto) {
+	public UserRegistrationResponseDto userRegister(final UserRegistrationRequestDto userRegistrationRequestDto) {
 
 		UserRegistration userRegistration = new UserRegistration();
 		userRegistration.setFirstName(userRegistrationRequestDto.getFirstName());
@@ -40,7 +49,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 		userRegistration = userRegistrationRepository.save(userRegistration);
 
-		UserRegistrationResponseDto userRegistrationResponseDto = new UserRegistrationResponseDto();
+		final UserRegistrationResponseDto userRegistrationResponseDto = new UserRegistrationResponseDto();
 		userRegistrationResponseDto.setEmail(userRegistration.getEmail());
 		userRegistrationResponseDto.setUserId(userRegistration.getUserId());
 		userRegistrationResponseDto.setMessage("Registered Successfully");
@@ -49,10 +58,10 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
-	public ForgetPasswordResponseDto forgetPassword(ForgetPasswordDto email) {
+	public ForgetPasswordResponseDto forgetPassword(final ForgetPasswordDto email) {
 
 		ForgetPasswordResponseDto state = new ForgetPasswordResponseDto();
-		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email.getEmail());
+		final UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email.getEmail());
 		if (userRegistrationRequestDto.getEmail().equals(email.getEmail())) {
 			state.setQuestion(userRegistrationRequestDto.getForgetPasswordQ());
 			state.setEmail(userRegistrationRequestDto.getEmail());
@@ -63,10 +72,10 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
-	public ForgetPasswordDto resetPassword(String email, ResetPasswordInputDto pwd) {
+	public ForgetPasswordDto resetPassword(final String email, final ResetPasswordInputDto pwd) {
 
-		UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email);
-		ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
+		final UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email);
+		final ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
 		forgetPasswordDto.setEmail(userRegistrationRequestDto.getEmail());
 		userRegistrationRequestDto.setPassword(pwd.getPwd());
 		userRegistrationRepository.save(userRegistrationRequestDto);
@@ -74,20 +83,43 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
-	public Integer logIn(LogInInputDto loginDto) {
-		UserRegistration logIn = userRegistrationRepository.findByEmail(loginDto.getEmail());
-		int result;
-		if (logIn.getEmail().equals(loginDto.getEmail()) && logIn.getPassword().equals(loginDto.getPwd())) {
-			result = 1;
-		} else {
-			result = 0;
+	public LogInDto logIn(final LogInInputDto loginDto) throws NoSuchElementException, InvalidInputException {
+		
+		final LogInDto loginResponse = new LogInDto();
+		loginResponse.setMessage("An unknown error occured!");
+		UserRegistration userRegistrationData = null;
+		
+		final Optional<UserRegistration> logIn = Optional.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail()));
+		
+		
+		if(logIn.isPresent()) {
+	      userRegistrationData = logIn.get();
+	      
+	      if(userRegistrationData.getEmail().equals(loginDto.getEmail()) &&  bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword()) )
+			{
+				loginResponse.setUserId(userRegistrationData.getUserId());
+				loginResponse.setEmail(userRegistrationData.getEmail());
+				loginResponse.setFirstName(userRegistrationData.getFirstName());
+				loginResponse.setLastName(userRegistrationData.getLastName());
+				loginResponse.setMessage("User is authenticated");
+			}
+		
+		   if(userRegistrationData.getEmail().equals(loginDto.getEmail()) && !userRegistrationData.getPassword().equals(loginDto.getPwd())) {
+				loginResponse.setMessage("Password incorrect!");
+		   }
 		}
-		return result;
+		else {
+			loginResponse.setMessage("Email id doesn't match!");
+			//throw new InvalidInputException("Email id doesn't match!");
+			logger.info("Email id doesn't match! : {}");
+		}
+	     
+		
+		
+		return loginResponse;
 	}
 
 	@Override
-	// @Cacheable annotation adds the caching behaviour. 
-    // If multiple requests are received, then the method won't be repeatedly executed, instead, the results are shared from cached storage.
     @Cacheable(value="userRegistrationCache")
 	public UserRegistration getUserRegistration(Long userId) {
 		UserRegistration userRegistrationDetail = userRegistrationRepository.findByUserId(userId);
@@ -97,11 +129,11 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		return userRegistrationDetail;
 	}
 
-	public ForgetPasswordDto forgetPassword2(ForgetPasswordInputDto forgetPasswordInputDto) {
-		UserRegistration userRegistrationRequestDto = userRegistrationRepository
+	public ForgetPasswordDto forgetPassword2(final ForgetPasswordInputDto forgetPasswordInputDto) {
+		final UserRegistration userRegistrationRequestDto = userRegistrationRepository
 				.findByEmail(forgetPasswordInputDto.getEmail());
 
-		ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
+		final ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
 		if (forgetPasswordInputDto.getAnswer().equals(userRegistrationRequestDto.getForgetPasswordA())) {
 			forgetPasswordDto.setEmail(userRegistrationRequestDto.getEmail());
 		} else {
