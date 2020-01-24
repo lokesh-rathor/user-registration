@@ -41,8 +41,8 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		UserRegistration userRegistration = new UserRegistration();
 		userRegistration.setFirstName(userRegistrationRequestDto.getFirstName());
 		userRegistration.setLastName(userRegistrationRequestDto.getLastName());
-		userRegistration.setEmail(userRegistrationRequestDto.getEmail());
 		userRegistration.setPassword(bcryptEncoder.encode(userRegistrationRequestDto.getPassword()));
+		userRegistration.setEmail(userRegistrationRequestDto.getEmail().toLowerCase());
 		userRegistration.setDateOfBirth(userRegistrationRequestDto.getDateOfBirth());
 		userRegistration.setForgetPasswordA(userRegistrationRequestDto.getForgetPasswordA());
 		userRegistration.setForgetPasswordQ(userRegistrationRequestDto.getForgetPasswordQ());
@@ -50,7 +50,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		userRegistration = userRegistrationRepository.save(userRegistration);
 
 		final UserRegistrationResponseDto userRegistrationResponseDto = new UserRegistrationResponseDto();
-		userRegistrationResponseDto.setEmail(userRegistration.getEmail());
+		userRegistrationResponseDto.setEmail(userRegistration.getEmail().toLowerCase());
 		userRegistrationResponseDto.setUserId(userRegistration.getUserId());
 		userRegistrationResponseDto.setMessage("Registered Successfully");
 
@@ -89,20 +89,20 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		loginResponse.setMessage("An unknown error occured!");
 		UserRegistration userRegistrationData = null;
 		
-		final Optional<UserRegistration> logIn = Optional.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail()));
+		final Optional<UserRegistration> logIn = Optional.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail().toLowerCase()));
 		
 		
 		if(logIn.isPresent()) {
 	      userRegistrationData = logIn.get();
 	      
-	      if(userRegistrationData.getEmail().equals(loginDto.getEmail()) && !userRegistrationData.getPassword().equals(loginDto.getPwd())) {
+	      if(userRegistrationData.getEmail().equals(loginDto.getEmail()) && !bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword())) {
 				loginResponse.setMessage("Password incorrect!");
 		   }
 	      
-	      if(userRegistrationData.getEmail().equals(loginDto.getEmail()) &&  bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword()) )
+	      if(userRegistrationData.getEmail().equals(loginDto.getEmail().toLowerCase()) &&  bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword()) )
 			{
 				loginResponse.setUserId(userRegistrationData.getUserId());
-				loginResponse.setEmail(userRegistrationData.getEmail());
+				loginResponse.setEmail(userRegistrationData.getEmail().toLowerCase());
 				loginResponse.setFirstName(userRegistrationData.getFirstName());
 				loginResponse.setLastName(userRegistrationData.getLastName());
 				loginResponse.setMessage("User is authenticated");
