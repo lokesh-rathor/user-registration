@@ -37,7 +37,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		UserRegistration userRegistration = new UserRegistration();
 		userRegistration.setFirstName(userRegistrationRequestDto.getFirstName());
 		userRegistration.setLastName(userRegistrationRequestDto.getLastName());
-		userRegistration.setEmail(userRegistrationRequestDto.getEmail());
+		userRegistration.setEmail(userRegistrationRequestDto.getEmail().toLowerCase());
 		userRegistration.setPassword(userRegistrationRequestDto.getPassword());
 		userRegistration.setDateOfBirth(userRegistrationRequestDto.getDateOfBirth());
 		userRegistration.setForgetPasswordA(userRegistrationRequestDto.getForgetPasswordA());
@@ -46,7 +46,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		userRegistration = userRegistrationRepository.save(userRegistration);
 
 		final UserRegistrationResponseDto userRegistrationResponseDto = new UserRegistrationResponseDto();
-		userRegistrationResponseDto.setEmail(userRegistration.getEmail());
+		userRegistrationResponseDto.setEmail(userRegistration.getEmail().toLowerCase());
 		userRegistrationResponseDto.setUserId(userRegistration.getUserId());
 		userRegistrationResponseDto.setMessage("Registered Successfully");
 
@@ -85,7 +85,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		loginResponse.setMessage("An unknown error occured!");
 		UserRegistration userRegistrationData = null;
 		
-		final Optional<UserRegistration> logIn = Optional.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail()));
+		final Optional<UserRegistration> logIn = Optional.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail().toLowerCase()));
 		
 		
 		if(logIn.isPresent()) {
@@ -94,7 +94,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	      if(userRegistrationData.getEmail().equals(loginDto.getEmail()) && userRegistrationData.getPassword().equals(loginDto.getPwd()))
 			{
 				loginResponse.setUserId(userRegistrationData.getUserId());
-				loginResponse.setEmail(userRegistrationData.getEmail());
+				loginResponse.setEmail(userRegistrationData.getEmail().toLowerCase());
 				loginResponse.setFirstName(userRegistrationData.getFirstName());
 				loginResponse.setLastName(userRegistrationData.getLastName());
 				loginResponse.setMessage("User is authenticated");
