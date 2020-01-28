@@ -41,9 +41,6 @@ class RegistrationControllerTest {
 	@MockBean
 	private UserRegistrationService userRegistrationService;
 
-	@MockBean
-	private UserRegistrationRepository userRegistrationRepository;
-
 	@Test
 	public void testUserRegistrationError() throws Exception {
 		@SuppressWarnings("deprecation")

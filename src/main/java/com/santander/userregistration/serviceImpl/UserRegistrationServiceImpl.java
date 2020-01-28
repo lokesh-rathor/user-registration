@@ -92,7 +92,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		final Optional<UserRegistration> logIn = Optional.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail().toLowerCase()));
 		
 		
-		if(logIn.isPresent()) {
+		if(logIn.isPresent()) { // if login is present then it will return true
 	      userRegistrationData = logIn.get();
 	      
 	      if(userRegistrationData.getEmail().equals(loginDto.getEmail()) && !bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword())) {
