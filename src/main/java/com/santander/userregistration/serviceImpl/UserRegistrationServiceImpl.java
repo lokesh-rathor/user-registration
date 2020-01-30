@@ -23,17 +23,21 @@ import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.service.UserRegistrationService;
 import com.santander.userregistration.util.BcryptEncoder;
+import com.santander.userregistration.util.CaptchaUtil;
 
 @Service
 public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserRegistrationServiceImpl.class);
-	
+
 	@Autowired
 	private UserRegistrationRepository userRegistrationRepository;
-	
+
 	@Autowired
 	private BcryptEncoder bcryptEncoder;
+	
+	@Autowired
+	private CaptchaUtil captchaUtil;
 
 	@Override
 	public UserRegistrationResponseDto userRegister(final UserRegistrationRequestDto userRegistrationRequestDto) {
@@ -84,45 +88,48 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 	@Override
 	public LogInDto logIn(final LogInInputDto loginDto) throws NoSuchElementException, InvalidInputException {
+		System.out.println("captcha : "+loginDto.getRecaptchaResponse());
+		boolean captchaVerified = captchaUtil.verify(loginDto.getRecaptchaResponse());
 		
+		if (!captchaVerified) {
+			throw new InvalidInputException("Captcha invalid!!!");
+		}
+
 		final LogInDto loginResponse = new LogInDto();
 		loginResponse.setMessage("An unknown error occured!");
 		UserRegistration userRegistrationData = null;
-		
-		final Optional<UserRegistration> logIn = Optional.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail().toLowerCase()));
-		
-		
-		if(logIn.isPresent()) { // if login is present then it will return true
-	      userRegistrationData = logIn.get();
-	      
-	      if(userRegistrationData.getEmail().equals(loginDto.getEmail()) && !bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword())) {
+
+		final Optional<UserRegistration> logIn = Optional
+				.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail().toLowerCase()));
+
+		if (logIn.isPresent()) { // if login is present then it will return true
+			userRegistrationData = logIn.get();
+
+			if (userRegistrationData.getEmail().equals(loginDto.getEmail())
+					&& !bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword())) {
 				loginResponse.setMessage("Password incorrect!");
-		   }
-	      
-	      if(userRegistrationData.getEmail().equals(loginDto.getEmail().toLowerCase()) &&  bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword()) )
-			{
+			}
+
+			if (userRegistrationData.getEmail().equals(loginDto.getEmail().toLowerCase())
+					&& bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword())) {
 				loginResponse.setUserId(userRegistrationData.getUserId());
 				loginResponse.setEmail(userRegistrationData.getEmail().toLowerCase());
 				loginResponse.setFirstName(userRegistrationData.getFirstName());
 				loginResponse.setLastName(userRegistrationData.getLastName());
 				loginResponse.setMessage("User is authenticated");
 			}
-		
-		   
-		}
-		else {
+
+		} else {
 			loginResponse.setMessage("Email id doesn't match!");
-			//throw new InvalidInputException("Email id doesn't match!");
+			// throw new InvalidInputException("Email id doesn't match!");
 			logger.info("Email id doesn't match! : {}");
 		}
-	     
-		
-		
+
 		return loginResponse;
 	}
 
 	@Override
-    @Cacheable(value="userRegistrationCache")
+	@Cacheable(value = "userRegistrationCache")
 	public UserRegistration getUserRegistration(Long userId) {
 		UserRegistration userRegistrationDetail = userRegistrationRepository.findByUserId(userId);
 		if (userRegistrationDetail == null) {
