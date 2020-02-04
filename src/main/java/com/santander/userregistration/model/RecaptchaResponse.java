@@ -31,4 +31,11 @@ public class RecaptchaResponse {
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
 	}
+
+	@Override
+	public String toString() {
+		return "RecaptchaResponse [success=" + success + ", challengeTs=" + challengeTs + ", hostname=" + hostname
+				+ "]";
+	}
+	
 }
