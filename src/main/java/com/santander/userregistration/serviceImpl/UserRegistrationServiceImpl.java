@@ -35,7 +35,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 	@Autowired
 	private BcryptEncoder bcryptEncoder;
-	
+
 	@Autowired
 	private CaptchaUtil captchaUtil;
 
@@ -88,9 +88,9 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 	@Override
 	public LogInDto logIn(final LogInInputDto loginDto) throws NoSuchElementException, InvalidInputException {
-		System.out.println("captcha : "+loginDto.getRecaptchaResponse());
+		System.out.println("captcha : " + loginDto.getRecaptchaResponse());
 		boolean captchaVerified = captchaUtil.verify(loginDto.getRecaptchaResponse());
-		
+
 		if (!captchaVerified) {
 			throw new InvalidInputException("Captcha invalid!!!");
 		}

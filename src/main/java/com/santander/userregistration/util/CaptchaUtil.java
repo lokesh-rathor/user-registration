@@ -34,7 +34,7 @@ public class CaptchaUtil {
 	public boolean verify(String response) {
 		try {
 
-			//IMP: This code is working fine without proxy so here we are bypassing the proxy
+			//IMP: This code is working fine without proxy, so here we are bypassing the proxy
 			
 			InetAddress localhost = InetAddress.getLocalHost();
 			System.out.println("System IP Address : " + (localhost.getHostAddress()).trim());
