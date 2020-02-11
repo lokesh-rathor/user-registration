@@ -47,6 +47,7 @@ public class RegistrationController {
 	@HystrixCommand(fallbackMethod = "fallback_hello", commandProperties = {
 			@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "100") })
 	@GetMapping("/say-hello")
+	//@RequestMapping({"/say-hello"})
 	public String sayHello() throws InterruptedException {
 		String port = environment.getProperty("local.server.port");
 		// Thread.sleep(20000);
@@ -123,5 +124,5 @@ public class RegistrationController {
 		UserRegistration userRegistration = userRegistrationService.getUserRegistration(userId);
 		return new ResponseEntity<>(userRegistration, HttpStatus.OK);
 	}
-
+	
 }
