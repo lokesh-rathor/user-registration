@@ -11,6 +11,7 @@ import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
 import com.santander.userregistration.exception.InvalidInputException;
+import com.santander.userregistration.model.UserRegistration;
 
 public interface UserRegistrationService {
 
@@ -21,6 +22,8 @@ public interface UserRegistrationService {
 	public ForgetPasswordDto resetPassword(String email,ResetPasswordInputDto pwd);
 	
 	public LogInDto logIn(LogInInputDto loginDto) throws NoSuchElementException, InvalidInputException ;
+	
+	public UserRegistration getUserRegistration(Long userId) throws InvalidInputException;
 	
 	public ForgetPasswordDto forgetPassword2(ForgetPasswordInputDto forgetPasswordInputDto);
 	

@@ -1,14 +1,14 @@
 package com.santander.userregistration.exception;
 
-public class InvalidInputException extends RuntimeException {
+public class UserNotFoundException extends RuntimeException{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public InvalidInputException(String message) {
+	public UserNotFoundException(String message) {
 		super(message);
 	}
-
+	
 }
