@@ -1,14 +1,11 @@
 package com.santander.userregistration.controller;
 
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +25,6 @@ import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
 import com.santander.userregistration.exception.InvalidInputException;
-import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.service.UserRegistrationService;
 
 @CrossOrigin("*")
@@ -45,44 +41,71 @@ public class RegistrationController {
 	private static final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
 	@HystrixCommand(fallbackMethod = "fallback_hello", commandProperties = {
+
 			@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "100") })
 	@GetMapping("/say-hello")
-	//@RequestMapping({"/say-hello"})
 	public String sayHello() throws InterruptedException {
+
 		String port = environment.getProperty("local.server.port");
-		// Thread.sleep(20000);
+
 		return "Hello World...." + port;
+
 	}
 
 	public String fallback_hello() {
+
 		return "Fallback";
+
 	}
 
 	@PostMapping("/register")
 	public ResponseEntity<UserRegistrationResponseDto> userRegistration(
-			@Valid @RequestBody UserRegistrationRequestDto userRegistrationRequestDto, Errors errors)
-			throws InvalidInputException {
+			@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) throws InvalidInputException {
 
-		if (errors.hasErrors()) {
-			throw new InvalidInputException("Invalid Input is missing");
-		}
-
+		/*
+		 * if(errors.hasErrors()) { throw new
+		 * InvalidInputException("Invalid Input is missing"); }
+		 */
+		
 		logger.info("Inside User Registration Method");
-		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService
-				.userRegister(userRegistrationRequestDto);
+		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService.userRegister(userRegistrationRequestDto);
 		logger.info("User Registration successfull");
-		return new ResponseEntity<UserRegistrationResponseDto>(userRegistrationResponseDto, HttpStatus.OK);
+		return new ResponseEntity<UserRegistrationResponseDto>(userRegistrationService.userRegister(userRegistrationRequestDto), HttpStatus.OK);
 
 	}
 
 	@PostMapping("/forgetPassword")
 	public ForgetPasswordResponseDto ForgetPassword(@RequestBody ForgetPasswordDto email) {
-		return userRegistrationService.forgetPassword(email);
-	}
 
+		ForgetPasswordResponseDto state = new ForgetPasswordResponseDto();
+		
+		System.out.println("abcddddddd");
+		try {
+		state = userRegistrationService.forgetPassword(email);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			
+		}
+		System.out.println(state);
+		return state;
+
+	}
+	
 	@PostMapping("/forgetPassword/reset")
 	public ForgetPasswordDto ForgetPassword2(@RequestBody ForgetPasswordInputDto email) {
-		return userRegistrationService.forgetPassword2(email);
+
+		ForgetPasswordDto state = new ForgetPasswordDto();
+		
+		try {
+		state = userRegistrationService.forgetPassword2(email);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			
+		}
+		return state;
+
 	}
 
 /*fix this, cover other http status codes*/
@@ -112,17 +135,4 @@ public class RegistrationController {
 
 	}
 
-	@GetMapping("/details/{userId}")
-	public ResponseEntity<UserRegistration> getUserDetails(@PathVariable("userId") Long userId)
-			throws InvalidInputException {
-
-		if (userId <= 0) {
-			
-			throw new InvalidInputException("Invalid Input is missing");
-		}
-		logger.info("Inside getUserDetails method..");
-		UserRegistration userRegistration = userRegistrationService.getUserRegistration(userId);
-		return new ResponseEntity<>(userRegistration, HttpStatus.OK);
-	}
-	
 }

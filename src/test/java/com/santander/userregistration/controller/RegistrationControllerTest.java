@@ -11,7 +11,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
-import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.service.UserRegistrationService;
 
@@ -41,21 +39,25 @@ class RegistrationControllerTest {
 	@MockBean
 	private UserRegistrationService userRegistrationService;
 
-	@Test
+	@MockBean
+	private UserRegistrationRepository userRegistrationRepository;
+
+	@Test // (expected = InvalidInputException.class)
 	public void testUserRegistrationError() throws Exception {
-		@SuppressWarnings("deprecation")
 		Date d1 = new Date(2017, 12, 12);
 		UserRegistrationRequestDto userRegistrationRequestDto = new UserRegistrationRequestDto();
-		userRegistrationRequestDto.setEmail("alex@gmail.com");
+		userRegistrationRequestDto.setEmail("abc@gsdf.com");
 		userRegistrationRequestDto.setDateOfBirth(d1);
-		userRegistrationRequestDto.setFirstName("alex");
-		userRegistrationRequestDto.setLastName("kumar");
-		userRegistrationRequestDto.setForgetPasswordA("harward");
-		userRegistrationRequestDto.setForgetPasswordQ("school");
-		userRegistrationRequestDto.setPassword("Ame");
+		userRegistrationRequestDto.setFirstName("ddd");
+		userRegistrationRequestDto.setLastName("gghh");
+		userRegistrationRequestDto.setForgetPasswordA("ghh");
+		userRegistrationRequestDto.setForgetPasswordQ("jkbjhbj");
+		userRegistrationRequestDto.setPassword("jke");
+
+		String request = this.mapper(userRegistrationRequestDto);
 
 		mvc.perform(MockMvcRequestBuilders.post("/users/register").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(this.objectToJsonMapper(userRegistrationRequestDto))).andExpect(status().isBadRequest());
+				.content(request)).andExpect(status().isBadRequest());
 	}
 
 	@Test
@@ -69,53 +71,53 @@ class RegistrationControllerTest {
 		Mockito.when(userRegistrationService.userRegister(Mockito.any(UserRegistrationRequestDto.class)))
 				.thenReturn(userRegistrationResponseDto);
 
-		@SuppressWarnings("deprecation")
 		Date d1 = new Date(2017, 12, 12);
 		UserRegistrationRequestDto userRegistrationRequestDto = new UserRegistrationRequestDto();
-		userRegistrationRequestDto.setEmail("alex@gmail.com");
+		userRegistrationRequestDto.setEmail("abc@gmail.com");
 		userRegistrationRequestDto.setDateOfBirth(d1);
-		userRegistrationRequestDto.setFirstName("alex");
-		userRegistrationRequestDto.setLastName("kumar");
-		userRegistrationRequestDto.setForgetPasswordA("harward");
-		userRegistrationRequestDto.setForgetPasswordQ("school");
-		userRegistrationRequestDto.setPassword("Password@123");
+		userRegistrationRequestDto.setFirstName("ddd");
+		userRegistrationRequestDto.setLastName("gghh");
+		userRegistrationRequestDto.setForgetPasswordA("ghh");
+		userRegistrationRequestDto.setForgetPasswordQ("jkbjhbj");
+		userRegistrationRequestDto.setPassword("jkehdjkwhe");
 
-		String request = this.objectToJsonMapper(userRegistrationRequestDto);
+		String request = this.mapper(userRegistrationRequestDto);
 
-		mvc.perform(MockMvcRequestBuilders.post("/users/register")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).content(request)).andExpect(status().isOk());
-	}
-	
-	@Test
-	void testGetUserDetails() throws Exception {
-		
-		UserRegistration userRegistration = new UserRegistration();
-		userRegistration.setEmail(EMAIL);
-		userRegistration.setUserId(1L);
+		MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post("/users/register")
+				.contentType(MediaType.APPLICATION_JSON_VALUE).content(request)).andReturn();
 
-		Mockito.when(userRegistrationService.getUserRegistration(Mockito.any(Long.class)))
-				.thenReturn(userRegistration);
+		int status = mvcResult.getResponse().getStatus();
+		assertEquals(200, status);
 
-
-		MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/users/details/1")
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
-		assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
 	}
 
 	@Test
 	void testUserLogIn() throws Exception {
 
+
 		LogInInputDto log = new LogInInputDto();
 		log.setEmail(EMAIL);
 		log.setPwd(pwd);
-		String request = this.objectToJsonMapper(log);
+		String request = this.mapper2(log);
 
-		mvc.perform(MockMvcRequestBuilders.post("/users/logIn")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).content(request)).andExpect(status().isOk());
+		MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post("/users/logIn")
+				.contentType(MediaType.APPLICATION_JSON_VALUE).content(request)).andReturn();
+
+		int status = mvcResult.getResponse().getStatus();
+		assertEquals(200, status);
+
 	}
 
-	private String objectToJsonMapper(Object request) throws JsonProcessingException {
-		return new ObjectMapper().writeValueAsString(request);
+	private String mapper(UserRegistrationRequestDto userRegistrationRequestDto) throws JsonProcessingException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		String request = objectMapper.writeValueAsString(userRegistrationRequestDto);
+		return request;
+	}
+
+	private String mapper2(LogInInputDto userRegistrationRequestDto) throws JsonProcessingException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		String request = objectMapper.writeValueAsString(userRegistrationRequestDto);
+		return request;
 	}
 
 }
