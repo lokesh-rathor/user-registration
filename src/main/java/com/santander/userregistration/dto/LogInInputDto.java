@@ -13,12 +13,8 @@ public class LogInInputDto {
 	
 	@NotNull
 	String email;
-	
 	@NotNull
 	String pwd;
-	
-	@NotNull
-    private String recaptchaResponse;
 
 	public String getEmail() {
 		return email;
@@ -34,14 +30,6 @@ public class LogInInputDto {
 
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
-	}
-
-	public String getRecaptchaResponse() {
-		return recaptchaResponse;
-	}
-
-	public void setRecaptchaResponse(String recaptchaResponse) {
-		this.recaptchaResponse = recaptchaResponse;
 	}
 
 }

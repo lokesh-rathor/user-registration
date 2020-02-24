@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +28,6 @@ import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
 import com.santander.userregistration.exception.InvalidInputException;
-import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.service.UserRegistrationService;
 
 @CrossOrigin("*")
@@ -49,16 +47,21 @@ public class RegistrationController {
 	private static final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
 	@HystrixCommand(fallbackMethod = "fallback_hello", commandProperties = {
+
 			@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "100") })
 	@GetMapping("/say-hello")
 	public String sayHello() throws InterruptedException {
+
 		String port = environment.getProperty("local.server.port");
 		Thread.sleep(20000);
 		return "Hello World...." + port;
+
 	}
 
 	public String fallback_hello() {
+
 		return "Fallback";
+
 	}
 
 	@PostMapping("/register")
@@ -69,9 +72,13 @@ public class RegistrationController {
 			throw new InvalidInputException("Invalid Input is missing");
 		}
 
+		/*
+		 * if(errors.hasErrors()) { throw new
+		 * InvalidInputException("Invalid Input is missing"); }
+		 */
+		
 		logger.info("Inside User Registration Method");
-		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService
-				.userRegister(userRegistrationRequestDto);
+		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService.userRegister(userRegistrationRequestDto);
 		logger.info("User Registration successfull");
 		return new ResponseEntity<>(userRegistrationResponseDto, HttpStatus.OK);
 
@@ -82,6 +89,8 @@ public class RegistrationController {
 		return userRegistrationService.forgetPassword(email);
 	}
 
+		
+	
 	@PostMapping("/forgetPassword/reset")
 	public ForgetPasswordDto forgetPassword2(@RequestBody ForgetPasswordInputDto email) {
 		return userRegistrationService.forgetPassword2(email);

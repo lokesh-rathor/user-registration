@@ -9,12 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Table(name="user_registration")
+@Table(name="userregistration")
 @Entity
 public class UserRegistration {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="UserId")
 	private Long userId;
 	
@@ -32,6 +32,7 @@ public class UserRegistration {
 	
 	@Column(name="Email", unique=true)
 	private String email;
+	
 	
 	@Column(name="ForgetPasswordQ")
 	private String forgetPasswordQ;

@@ -14,7 +14,6 @@ public class LogInDto {
 	private String firstName="";
 	private String lastName="";
 	private String message="";
-	private String jwt;
 	
 	public Long getUserId() {
 		return userId;
@@ -46,12 +45,6 @@ public class LogInDto {
 	}
 	public void setMessage(String message) {
 		this.message = message;
-	}
-	public String getJwt() {
-		return jwt;
-	}
-	public void setJwt(String jwt) {
-		this.jwt = jwt;
 	}
 
 	
