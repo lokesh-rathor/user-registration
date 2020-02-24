@@ -1,6 +1,5 @@
-package com.santander.userregistration.serviceImpl;
+package com.santander.userregistration.serviceimpl;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -64,15 +63,18 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	@Override
 	public ForgetPasswordResponseDto forgetPassword(final ForgetPasswordDto email) {
 
-		ForgetPasswordResponseDto state = new ForgetPasswordResponseDto();
+		ForgetPasswordResponseDto forgetPasswordResponse = new ForgetPasswordResponseDto();
+
 		final UserRegistration userRegistrationRequestDto = userRegistrationRepository.findByEmail(email.getEmail());
-		if (userRegistrationRequestDto.getEmail().equals(email.getEmail())) {
-			state.setQuestion(userRegistrationRequestDto.getForgetPasswordQ());
-			state.setEmail(userRegistrationRequestDto.getEmail());
-		} else {
-			state = null;
+
+		if (userRegistrationRequestDto == null) {
+			throw new UserNotFoundException("Invalid Email.");
 		}
-		return state;
+
+		forgetPasswordResponse.setQuestion(userRegistrationRequestDto.getForgetPasswordQ());
+		forgetPasswordResponse.setEmail(userRegistrationRequestDto.getEmail());
+
+		return forgetPasswordResponse;
 	}
 
 	@Override
@@ -87,8 +89,9 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
-	public LogInDto logIn(final LogInInputDto loginDto) throws NoSuchElementException, InvalidInputException {
-		System.out.println("captcha : " + loginDto.getRecaptchaResponse());
+	public LogInDto logIn(final LogInInputDto loginDto) {
+
+		logger.info("captcha : {} ", loginDto.getRecaptchaResponse());
 		boolean captchaVerified = captchaUtil.verify(loginDto.getRecaptchaResponse());
 
 		if (!captchaVerified) {
@@ -102,16 +105,14 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		final Optional<UserRegistration> logIn = Optional
 				.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail().toLowerCase()));
 
-		if (logIn.isPresent()) { // if login is present then it will return true
+		if (logIn.isPresent()) {
 			userRegistrationData = logIn.get();
 
-			if (userRegistrationData.getEmail().equals(loginDto.getEmail())
-					&& !bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword())) {
+			if (!bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword())) {
 				loginResponse.setMessage("Password incorrect!");
 			}
 
-			if (userRegistrationData.getEmail().equals(loginDto.getEmail().toLowerCase())
-					&& bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword())) {
+			if (bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword())) {
 				loginResponse.setUserId(userRegistrationData.getUserId());
 				loginResponse.setEmail(userRegistrationData.getEmail().toLowerCase());
 				loginResponse.setFirstName(userRegistrationData.getFirstName());
@@ -121,7 +122,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 		} else {
 			loginResponse.setMessage("Email id doesn't match!");
-			// throw new InvalidInputException("Email id doesn't match!");
 			logger.info("Email id doesn't match! : {}");
 		}
 
@@ -141,11 +141,11 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	public ForgetPasswordDto forgetPassword2(final ForgetPasswordInputDto forgetPasswordInputDto) {
 		final UserRegistration userRegistrationRequestDto = userRegistrationRepository
 				.findByEmail(forgetPasswordInputDto.getEmail());
-
+ 
 		final ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
 		if (forgetPasswordInputDto.getAnswer().equals(userRegistrationRequestDto.getForgetPasswordA())) {
 			forgetPasswordDto.setEmail(userRegistrationRequestDto.getEmail());
-		} else {
+		}else {
 			forgetPasswordDto.setEmail(null);
 		}
 		return forgetPasswordDto;

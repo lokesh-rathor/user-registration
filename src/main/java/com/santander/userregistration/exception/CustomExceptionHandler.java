@@ -14,7 +14,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 		ErrorResponse error = new ErrorResponse();
 		error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		error.setMessage(ex.getMessage());
-		return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR); 
 	}
 
 	@ExceptionHandler(InvalidInputException.class)
@@ -22,7 +22,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 		ErrorResponse exceptionResponse = new ErrorResponse();
 		exceptionResponse.setMessage(ex.getMessage());
 		exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-		return new ResponseEntity<ErrorResponse>(exceptionResponse, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(UserNotFoundException.class)
@@ -30,7 +30,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 		ErrorResponse exceptionResponse = new ErrorResponse();
 		exceptionResponse.setMessage(ex.getMessage());
 		exceptionResponse.setStatus(HttpStatus.NOT_FOUND.value());
-		return new ResponseEntity<ErrorResponse>(exceptionResponse, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
 	}
 
 }

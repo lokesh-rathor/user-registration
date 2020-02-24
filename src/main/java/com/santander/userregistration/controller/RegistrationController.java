@@ -1,5 +1,6 @@
 package com.santander.userregistration.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -40,6 +41,9 @@ public class RegistrationController {
 	Environment environment;
 
 	@Autowired
+	private HttpServletRequest response;
+
+	@Autowired
 	private UserRegistrationService userRegistrationService;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
@@ -47,10 +51,9 @@ public class RegistrationController {
 	@HystrixCommand(fallbackMethod = "fallback_hello", commandProperties = {
 			@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "100") })
 	@GetMapping("/say-hello")
-	//@RequestMapping({"/say-hello"})
 	public String sayHello() throws InterruptedException {
 		String port = environment.getProperty("local.server.port");
-		// Thread.sleep(20000);
+		Thread.sleep(20000);
 		return "Hello World...." + port;
 	}
 
@@ -60,8 +63,7 @@ public class RegistrationController {
 
 	@PostMapping("/register")
 	public ResponseEntity<UserRegistrationResponseDto> userRegistration(
-			@Valid @RequestBody UserRegistrationRequestDto userRegistrationRequestDto, Errors errors)
-			throws InvalidInputException {
+			@Valid @RequestBody UserRegistrationRequestDto userRegistrationRequestDto, Errors errors) {
 
 		if (errors.hasErrors()) {
 			throw new InvalidInputException("Invalid Input is missing");
@@ -71,34 +73,26 @@ public class RegistrationController {
 		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService
 				.userRegister(userRegistrationRequestDto);
 		logger.info("User Registration successfull");
-		return new ResponseEntity<UserRegistrationResponseDto>(userRegistrationResponseDto, HttpStatus.OK);
+		return new ResponseEntity<>(userRegistrationResponseDto, HttpStatus.OK);
 
 	}
 
 	@PostMapping("/forgetPassword")
-	public ForgetPasswordResponseDto ForgetPassword(@RequestBody ForgetPasswordDto email) {
+	public ForgetPasswordResponseDto forgetPassword(@RequestBody ForgetPasswordDto email) {
 		return userRegistrationService.forgetPassword(email);
 	}
 
 	@PostMapping("/forgetPassword/reset")
-	public ForgetPasswordDto ForgetPassword2(@RequestBody ForgetPasswordInputDto email) {
+	public ForgetPasswordDto forgetPassword2(@RequestBody ForgetPasswordInputDto email) {
 		return userRegistrationService.forgetPassword2(email);
 	}
 
-/*fix this, cover other http status codes*/
+	/* fix this, cover other http status codes */
 	@PostMapping(value = "/logIn")
 	public ResponseEntity<LogInDto> logIn(@RequestBody LogInInputDto loginDto) {
-		
-		LogInDto loginResponse = new LogInDto();
-		//ResponseEntity<T> response = new ResponseEntity<T>(loginResponse, HttpStatus.OK);
-		
-		try {
-			loginResponse = userRegistrationService.logIn(loginDto);
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		LogInDto loginResponse = userRegistrationService.logIn(loginDto);
+
 		return new ResponseEntity<>(loginResponse, HttpStatus.OK);
 
 	}
@@ -113,16 +107,15 @@ public class RegistrationController {
 	}
 
 	@GetMapping("/details/{userId}")
-	public ResponseEntity<UserRegistration> getUserDetails(@PathVariable("userId") Long userId)
-			throws InvalidInputException {
-
+	public ResponseEntity<UserRegistration> getUserDetails(@PathVariable("userId") Long userId) {
+		logger.info("response.getHeader(\"Authorization\") : {}" + response.getHeader("Authorization"));
 		if (userId <= 0) {
-			
-			throw new InvalidInputException("Invalid Input is missing");
+
+			throw new InvalidInputException("Invalid Input");
 		}
 		logger.info("Inside getUserDetails method..");
 		UserRegistration userRegistration = userRegistrationService.getUserRegistration(userId);
 		return new ResponseEntity<>(userRegistration, HttpStatus.OK);
 	}
-	
+
 }

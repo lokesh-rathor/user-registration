@@ -20,11 +20,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.santander.userregistration.dto.ForgetPasswordDto;
+import com.santander.userregistration.dto.ForgetPasswordInputDto;
 import com.santander.userregistration.dto.LogInInputDto;
+import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
 import com.santander.userregistration.model.UserRegistration;
-import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.service.UserRegistrationService;
 
 @ExtendWith(SpringExtension.class)
@@ -33,7 +35,7 @@ class RegistrationControllerTest {
 
 	private static final String EMAIL = "test@test.com";
 
-	private static final String pwd = "12345678";
+	private static final String PWD = "12345678";
 
 	@Autowired
 	private MockMvc mvc;
@@ -82,24 +84,30 @@ class RegistrationControllerTest {
 
 		String request = this.objectToJsonMapper(userRegistrationRequestDto);
 
-		mvc.perform(MockMvcRequestBuilders.post("/users/register")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).content(request)).andExpect(status().isOk());
+		mvc.perform(MockMvcRequestBuilders.post("/users/register").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(request)).andExpect(status().isOk());
 	}
-	
+
 	@Test
 	void testGetUserDetails() throws Exception {
-		
+
 		UserRegistration userRegistration = new UserRegistration();
 		userRegistration.setEmail(EMAIL);
 		userRegistration.setUserId(1L);
 
-		Mockito.when(userRegistrationService.getUserRegistration(Mockito.any(Long.class)))
-				.thenReturn(userRegistration);
+		Mockito.when(userRegistrationService.getUserRegistration(Mockito.any(Long.class))).thenReturn(userRegistration);
 
-
-		MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/users/details/1")
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+		MvcResult mvcResult = mvc
+				.perform(MockMvcRequestBuilders.get("/users/details/1").contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andReturn();
 		assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
+	}
+
+	@Test
+	void testGetUserDetailsError() throws Exception {
+
+		mvc.perform(MockMvcRequestBuilders.get("/users/details/-1").contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isBadRequest());
 	}
 
 	@Test
@@ -107,15 +115,46 @@ class RegistrationControllerTest {
 
 		LogInInputDto log = new LogInInputDto();
 		log.setEmail(EMAIL);
-		log.setPwd(pwd);
+		log.setPwd(PWD);
 		String request = this.objectToJsonMapper(log);
 
-		mvc.perform(MockMvcRequestBuilders.post("/users/logIn")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).content(request)).andExpect(status().isOk());
+		mvc.perform(MockMvcRequestBuilders.post("/users/logIn").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(request)).andExpect(status().isOk());
+	}
+	
+	@Test
+	void testResetPassword() throws Exception {
+		
+		ResetPasswordInputDto resetPasswordDto = new ResetPasswordInputDto();
+		resetPasswordDto.setPwd(PWD);
+		String request = this.objectToJsonMapper(resetPasswordDto);
+		
+		mvc.perform(MockMvcRequestBuilders.post("/users/resetPassword/"+EMAIL).contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(request)).andExpect(status().isOk());
+	}
+	
+	@Test
+	void testForgetPassword() throws Exception {
+		ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
+		forgetPasswordDto.setEmail(EMAIL);
+		String request = this.objectToJsonMapper(forgetPasswordDto);
+		
+		mvc.perform(MockMvcRequestBuilders.post("/users/forgetPassword").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(request)).andExpect(status().isOk());
+	}
+	
+	@Test
+	void testForgetPassword2() throws Exception {
+		ForgetPasswordInputDto forgetPasswordDto = new ForgetPasswordInputDto();
+		forgetPasswordDto.setEmail(EMAIL);
+		String request = this.objectToJsonMapper(forgetPasswordDto);
+		
+		mvc.perform(MockMvcRequestBuilders.post("/users/forgetPassword/reset").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(request)).andExpect(status().isOk());
 	}
 
 	private String objectToJsonMapper(Object request) throws JsonProcessingException {
 		return new ObjectMapper().writeValueAsString(request);
 	}
-
+ 
 }

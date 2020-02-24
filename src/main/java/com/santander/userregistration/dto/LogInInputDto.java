@@ -3,13 +3,13 @@
  */
 package com.santander.userregistration.dto;
 
-import com.sun.istack.NotNull;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Harvindar.Raghav
  *
  */
-public class LogInInputDto {
+public class LogInInputDto { 
 	
 	@NotNull
 	String email;
