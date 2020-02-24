@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
 import com.santander.userregistration.exception.InvalidInputException;
+import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.service.UserRegistrationService;
 
 @CrossOrigin("*")
@@ -66,11 +68,11 @@ public class RegistrationController {
 
 	@PostMapping("/register")
 	public ResponseEntity<UserRegistrationResponseDto> userRegistration(
-			@Valid @RequestBody UserRegistrationRequestDto userRegistrationRequestDto, Errors errors) {
+			@Valid @RequestBody UserRegistrationRequestDto userRegistrationRequestDto, Errors errors) throws InvalidInputException {
 
 		if (errors.hasErrors()) {
 			throw new InvalidInputException("Invalid Input is missing");
-		}
+		} 
 
 		/*
 		 * if(errors.hasErrors()) { throw new
@@ -116,7 +118,7 @@ public class RegistrationController {
 	}
 
 	@GetMapping("/details/{userId}")
-	public ResponseEntity<UserRegistration> getUserDetails(@PathVariable("userId") Long userId) {
+	public ResponseEntity<UserRegistration> getUserDetails(@PathVariable("userId") Long userId) throws InvalidInputException {
 		logger.info("response.getHeader(\"Authorization\") : {}" + response.getHeader("Authorization"));
 		if (userId <= 0) {
 

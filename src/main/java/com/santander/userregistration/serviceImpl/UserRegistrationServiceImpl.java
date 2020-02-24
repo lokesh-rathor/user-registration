@@ -1,6 +1,5 @@
 package com.santander.userregistration.serviceimpl;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
-import com.santander.userregistration.exception.InvalidInputException;
 import com.santander.userregistration.model.UserRegistration;
 import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.service.UserRegistrationService;
@@ -84,34 +82,9 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 		return forgetPasswordDto;
 	}
 
-	@Override
+	
 
-	public LogInDto logIn(final LogInInputDto loginDto) {
-
-		logger.info("captcha : {} ", loginDto.getRecaptchaResponse());
-		boolean captchaVerified = captchaUtil.verify(loginDto.getRecaptchaResponse());
-
-		if (!captchaVerified) {
-			throw new InvalidInputException("Captcha invalid!!!");
-		}
-
-		final LogInDto loginResponse = new LogInDto();
-		loginResponse.setMessage("An unknown error occured!");
-		UserRegistration userRegistrationData = null;
-
-		final Optional<UserRegistration> logIn = Optional
-				.ofNullable(userRegistrationRepository.findByEmail(loginDto.getEmail().toLowerCase()));
-
-		if (logIn.isPresent()) {
-			userRegistrationData = logIn.get();
-
-			if (!bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword())) {
-				loginResponse.setMessage("Password incorrect!");
-			}
-
-			if (bcryptEncoder.matches(loginDto.getPwd(), userRegistrationData.getPassword())) {
-
-	public LogInDto logIn(LogInInputDto loginDto) throws NoSuchElementException, InvalidInputException {
+	public LogInDto logIn(LogInInputDto loginDto) {
 		
 		LogInDto loginResponse = new LogInDto();
 		loginResponse.setMessage("An unknown error occured!");
@@ -154,7 +127,9 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 	public UserRegistration getUserRegistration(Long userId) {
 		UserRegistration userRegistrationDetail = userRegistrationRepository.findByUserId(userId);
 		if (userRegistrationDetail == null) {
-			throw new UserNotFoundException("user not found");
+			//throw new UserNotFoundException("user not found");
+			logger.error("user not found");
+			return null;
 		}
 		return userRegistrationDetail;
 	}

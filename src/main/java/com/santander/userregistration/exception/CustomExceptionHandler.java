@@ -1,8 +1,5 @@
 package com.santander.userregistration.exception;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -30,12 +27,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler{
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(UserNotFoundException.class)
-	public final ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
-		ErrorResponse exceptionResponse = new ErrorResponse();
-		exceptionResponse.setMessage(ex.getMessage());
-		exceptionResponse.setStatus(HttpStatus.NOT_FOUND.value());
-		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
-	}
+	/*
+	 * @ExceptionHandler(UserNotFoundException.class) public final
+	 * ResponseEntity<ErrorResponse>
+	 * handleUserNotFoundException(UserNotFoundException ex) { ErrorResponse
+	 * exceptionResponse = new ErrorResponse();
+	 * exceptionResponse.setMessage(ex.getMessage());
+	 * exceptionResponse.setStatus(HttpStatus.NOT_FOUND.value()); return new
+	 * ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND); }
+	 */
 	
 }

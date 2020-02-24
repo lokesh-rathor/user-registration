@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +27,7 @@ import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
 import com.santander.userregistration.model.UserRegistration;
+import com.santander.userregistration.repository.UserRegistrationRepository;
 import com.santander.userregistration.service.UserRegistrationService;
 
 @ExtendWith(SpringExtension.class)
@@ -57,7 +59,7 @@ class RegistrationControllerTest {
 		userRegistrationRequestDto.setForgetPasswordQ("jkbjhbj");
 		userRegistrationRequestDto.setPassword("jke");
 
-		String request = this.mapper(userRegistrationRequestDto);
+		String request = this.objectToJsonMapper(userRegistrationRequestDto);
 
 		mvc.perform(MockMvcRequestBuilders.post("/users/register").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(request)).andExpect(status().isBadRequest());
@@ -83,6 +85,8 @@ class RegistrationControllerTest {
 		userRegistrationRequestDto.setForgetPasswordA("ghh");
 		userRegistrationRequestDto.setForgetPasswordQ("jkbjhbj");
 		userRegistrationRequestDto.setPassword("jkehdjkwhe");
+		
+		String request = this.objectToJsonMapper(userRegistrationRequestDto);
 
 		mvc.perform(MockMvcRequestBuilders.post("/users/register").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(request)).andExpect(status().isOk());
@@ -117,7 +121,7 @@ class RegistrationControllerTest {
 		LogInInputDto log = new LogInInputDto();
 		log.setEmail(EMAIL);
 		log.setPwd(PWD);
-		String request = this.objectToJsonMapper(log);
+		String request = this.mapper2(log);
 
 		mvc.perform(MockMvcRequestBuilders.post("/users/logIn").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(request)).andExpect(status().isOk());
@@ -155,6 +159,12 @@ class RegistrationControllerTest {
 	}
 
 	private String mapper2(LogInInputDto userRegistrationRequestDto) throws JsonProcessingException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		String request = objectMapper.writeValueAsString(userRegistrationRequestDto);
+		return request;
+	}
+	
+	private String objectToJsonMapper(Object userRegistrationRequestDto) throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		String request = objectMapper.writeValueAsString(userRegistrationRequestDto);
 		return request;
