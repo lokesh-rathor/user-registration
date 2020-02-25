@@ -106,6 +106,4 @@ public class UserRegistration {
 		this.forgetPasswordA = forgetPasswordA;
 	}
 	
-	
-	
 }

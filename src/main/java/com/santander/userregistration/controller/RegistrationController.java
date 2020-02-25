@@ -74,11 +74,6 @@ public class RegistrationController {
 			throw new InvalidInputException("Invalid Input is missing");
 		} 
 
-		/*
-		 * if(errors.hasErrors()) { throw new
-		 * InvalidInputException("Invalid Input is missing"); }
-		 */
-		
 		logger.info("Inside User Registration Method");
 		UserRegistrationResponseDto userRegistrationResponseDto = userRegistrationService.userRegister(userRegistrationRequestDto);
 		logger.info("User Registration successfull");
@@ -87,7 +82,7 @@ public class RegistrationController {
 	}
 
 	@PostMapping("/forgetPassword")
-	public ForgetPasswordResponseDto forgetPassword(@RequestBody ForgetPasswordDto email) {
+	public ForgetPasswordResponseDto forgetPassword(@RequestBody ForgetPasswordDto email) throws InvalidInputException {
 		return userRegistrationService.forgetPassword(email);
 	}
 

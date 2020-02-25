@@ -1,7 +1,6 @@
 package com.santander.userregistration.dto;
 
 import java.sql.Date;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -76,7 +75,5 @@ public class UserRegistrationRequestDto {
 	public void setForgetPasswordA(String forgetPasswordA) {
 		this.forgetPasswordA = forgetPasswordA;
 	}
-	
-	
-	
+
 }
