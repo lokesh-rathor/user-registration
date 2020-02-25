@@ -69,7 +69,7 @@ class TestUserRegistrationServiceTest {
 	
 
 	@Test
-	void testForgetPassword() {
+	void testForgetPassword() throws InvalidInputException {
 		ForgetPasswordDto forgetPasswordDto = new ForgetPasswordDto();
 		forgetPasswordDto.setEmail(EMAIL);
 

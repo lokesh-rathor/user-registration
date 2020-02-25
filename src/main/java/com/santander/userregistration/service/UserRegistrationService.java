@@ -8,13 +8,14 @@ import com.santander.userregistration.dto.LogInInputDto;
 import com.santander.userregistration.dto.ResetPasswordInputDto;
 import com.santander.userregistration.dto.UserRegistrationRequestDto;
 import com.santander.userregistration.dto.UserRegistrationResponseDto;
+import com.santander.userregistration.exception.InvalidInputException;
 import com.santander.userregistration.model.UserRegistration;
 
 public interface UserRegistrationService {
 
 	public UserRegistrationResponseDto userRegister(UserRegistrationRequestDto userRegistrationRequestDto);
 
-	public ForgetPasswordResponseDto forgetPassword(ForgetPasswordDto email);
+	public ForgetPasswordResponseDto forgetPassword(ForgetPasswordDto email) throws InvalidInputException;
 
 	public ForgetPasswordDto resetPassword(String email, ResetPasswordInputDto pwd);
 

@@ -26,15 +26,5 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler{
 		exceptionResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
-
-	/*
-	 * @ExceptionHandler(UserNotFoundException.class) public final
-	 * ResponseEntity<ErrorResponse>
-	 * handleUserNotFoundException(UserNotFoundException ex) { ErrorResponse
-	 * exceptionResponse = new ErrorResponse();
-	 * exceptionResponse.setMessage(ex.getMessage());
-	 * exceptionResponse.setStatus(HttpStatus.NOT_FOUND.value()); return new
-	 * ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND); }
-	 */
-	
+ 
 }
